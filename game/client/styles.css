@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  padding: 0;
+
+  background-image: url('bg_registration_wot.jpg');
+  background-size: cover;
+  background-position: center;
+  font-family: 'Orbitron', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+
+.game-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  display: block;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 2.5em;
+  text-align: center;
+  color: rgb(216, 216, 216);
+  text-shadow: 2px 2px #000;
+}
+
+canvas {
+  border: 1px solid rgb(20, 20, 20);
+  background-color: rgb(43, 43, 43);
+  display: block;
+  margin: 0 auto;
+}
+
+#mobile-controls button {
+  font-size: 24px;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 10px;
+  background-color: #333;
+  color: white;
+  border: 2px solid white;
+  touch-action: none; /* Prevents zoom on double tap */
+}
+
+
+.health-bar-container {
+    width: auto;
+    height: 10px;
+    background-color: #444;
+    border: 2px solid #222;
+    overflow: hidden;
+}
+
+.health-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to right, #0f0, #4caf50);
+    transition: background 0.5s ease-in-out, width 0.5s ease-in-out;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+input[type="range"] {
+    width: 100%;
+}

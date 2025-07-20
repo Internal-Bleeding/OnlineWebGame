@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Canvas Box Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-container">
+    <div class="health-bar-container">
+      <div id="healthBar" class="health-bar-fill"></div>
+    </div>
+    <canvas id="canvas" width="850" height="850">
+    </canvas>
+    <canvas id="minimap" width="200" height="200" style="position:absolute; bottom:20px; right:20px; border:1px solid white;"></canvas>
+  </div>
+  <div id="mobile-controls" style="display: none;">
+  <div style="position: fixed; bottom: 80px; left: 20px;">
+    <button onclick="setKey('ArrowUp', true)" onmouseup="setKey('ArrowUp', false)" ontouchstart="setKey('ArrowUp', true)" ontouchend="setKey('ArrowUp', false)">↑</button><br/>
+    <button onclick="setKey('ArrowLeft', true)" onmouseup="setKey('ArrowLeft', false)" ontouchstart="setKey('ArrowLeft', true)" ontouchend="setKey('ArrowLeft', false)">←</button>
+    <button onclick="setKey('ArrowRight', true)" onmouseup="setKey('ArrowRight', false)" ontouchstart="setKey('ArrowRight', true)" ontouchend="setKey('ArrowRight', false)">→</button><br/>
+    <button onclick="setKey('ArrowDown', true)" onmouseup="setKey('ArrowDown', false)" ontouchstart="setKey('ArrowDown', true)" ontouchend="setKey('ArrowDown', false)">↓</button>
+  </div>
+  <div style="position: fixed; bottom: 80px; right: 20px;">
+    <button onclick="sendAction('shoot')" style="width: 80px; height: 80px;">Shoot</button>
+  </div>
+</div>
+  <script src="client.js"></script>
+</body>
+</html>
