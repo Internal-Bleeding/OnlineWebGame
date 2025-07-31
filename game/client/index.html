@@ -16,15 +16,15 @@
   </div>
   <div id="mobile-controls" style="display: none;">
   <div style="position: fixed; bottom: 80px; left: 20px;">
-    <button onclick="setKey('ArrowUp', true)" onmouseup="setKey('ArrowUp', false)" ontouchstart="setKey('ArrowUp', true)" ontouchend="setKey('ArrowUp', false)">↑</button><br/>
-    <button onclick="setKey('ArrowLeft', true)" onmouseup="setKey('ArrowLeft', false)" ontouchstart="setKey('ArrowLeft', true)" ontouchend="setKey('ArrowLeft', false)">←</button>
-    <button onclick="setKey('ArrowRight', true)" onmouseup="setKey('ArrowRight', false)" ontouchstart="setKey('ArrowRight', true)" ontouchend="setKey('ArrowRight', false)">→</button><br/>
-    <button onclick="setKey('ArrowDown', true)" onmouseup="setKey('ArrowDown', false)" ontouchstart="setKey('ArrowDown', true)" ontouchend="setKey('ArrowDown', false)">↓</button>
+    <button onmousedown="setKey('ArrowUp', true)" onmouseup="setKey('ArrowUp', false)" ontouchstart="setKey('ArrowUp', true)" ontouchend="setKey('ArrowUp', false)">↑</button><br/>
+    <button onmousedown="setKey('ArrowLeft', true)" onmouseup="setKey('ArrowLeft', false)" ontouchstart="setKey('ArrowLeft', true)" ontouchend="setKey('ArrowLeft', false)">←</button>
+    <button onmousedown="setKey('ArrowRight', true)" onmouseup="setKey('ArrowRight', false)" ontouchstart="setKey('ArrowRight', true)" ontouchend="setKey('ArrowRight', false)">→</button><br/>
+    <button onmousedown="setKey('ArrowDown', true)" onmouseup="setKey('ArrowDown', false)" ontouchstart="setKey('ArrowDown', true)" ontouchend="setKey('ArrowDown', false)">↓</button>
   </div>
   <div style="position: fixed; bottom: 80px; right: 20px;">
     <button onclick="sendAction('shoot')" style="width: 80px; height: 80px;">Shoot</button>
   </div>
 </div>
-  <script src="client.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

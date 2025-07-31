@@ -1,3 +1,5 @@
+//client/main.js
+
 const canvas = document.getElementById('canvas');
 const minimap = document.getElementById('minimap');
 const mctx = minimap.getContext('2d');
@@ -21,7 +23,7 @@ let gameState = {
 };
 let obstacles = [];
 
-fetch('/map-data')
+fetch('/game/map-data')
 .then(res => res.json())
 .then(_obstacles => {
     obstacles = _obstacles;
@@ -295,17 +297,23 @@ function drawGame() {
     }
 }
 
+const ws = new WebSocket(`ws://${location.host}`); // automatically connects to main server
 
-const evtSource = new EventSource('/events');
-evtSource.onmessage = function(e) {
+ws.onmessage = function (e) {
     previousState = gameState;
     const data = JSON.parse(e.data);
     if (!myId && data.myId) myId = data.myId;
     setHealth(data.boxes.find(box => box.id === myId)?.health || 0);
     targetState = data;
-    //gameState = data;
     lastUpdateTime = performance.now();
-    //drawGame();
+};
+
+ws.onopen = () => {
+    console.log('[WebSocket] Connected to game server');
+};
+
+ws.onclose = () => {
+    console.warn('[WebSocket] Disconnected from game server');
 };
 
 function renderLoop() {
@@ -319,11 +327,9 @@ function renderLoop() {
 }
 
 function sendAction(type, payload = {}) {
-    fetch('/action', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: myId, type, ...payload })
-    });
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type, ...payload }));
+    }
 }
 
 // Smooth key input logic

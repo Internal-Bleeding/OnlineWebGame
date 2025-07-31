@@ -7,4 +7,21 @@ const obstacles = Object.freeze([
     { id: 'obs6', x: 200, y: 400, width: 100, height: 200, angle: 0 },
 ]);
 
-module.exports = obstacles;
+const MAP_SIZE_X = 1000;
+const MAP_SIZE_Y = 1000;
+
+let bulletLoopStarted = false;
+
+let boxes = [];
+let bullets = [];
+let clients = new Map();
+
+module.exports = {
+    obstacles,
+    MAP_SIZE_X,
+    MAP_SIZE_Y,
+    boxes,
+    bullets, 
+    clients,
+    bulletLoopStarted
+}

@@ -1,14 +1,6 @@
 // engine/gameEngine.js
 const { randomUUID } = require('crypto');
-const obstacles = require('./mapData');
-
-let boxes = [];
-let bullets = [];
-let clients = new Map();
-let bulletLoopStarted = false;
-
-const MAP_SIZE_X = 1000;
-const MAP_SIZE_Y = 1000;
+const {obstacles, MAP_SIZE_X, MAP_SIZE_Y, boxes, bullets, clients} = require('./mapData');
 
 function isBoxVisible(from, to, obstacles) {
     for (const obs of obstacles) {
@@ -17,7 +9,7 @@ function isBoxVisible(from, to, obstacles) {
         for (const edge of obsEdges) {
             if (doLineSegmentsIntersect(from, to, edge[0], edge[1])) {
                 return false;
-            }
+            } 
         }
     }
     return true;
@@ -49,7 +41,7 @@ function doLineSegmentsIntersect(p1, p2, q1, q2) {
     );
 }
 
-function broadcast() {
+/*function broadcast() {
     for (const client of clients.values()) {
         const clientBox = boxes.filter(b => b.id == client.id)[0]; // return the box that has our client id
         const visibleBoxes = boxes.filter(box => {
@@ -63,7 +55,7 @@ function broadcast() {
 
         client.res.write(`data: ${JSON.stringify({ myId: client.id, boxes: visibleBoxes, bullets })}\n\n`);
     }
-}
+}*/
 
 function isPointInRotatedBox(point, box) {
   const angle = box.angle; // in radians
@@ -89,59 +81,52 @@ function isPointInRotatedBox(point, box) {
   );
 }
 
-function startLoop() {
-    if (bulletLoopStarted) return;
-    bulletLoopStarted = true;
+function moveBullets() {
+    // Move bullets
+    for (const bullet of bullets) {
+        bullet.x += bullet.speed * Math.cos(bullet.angle);
+        bullet.y += bullet.speed * Math.sin(bullet.angle);
+    }
+}
 
-    setInterval(() => {
-        // Move bullets
-        for (const bullet of bullets) {
-            bullet.x += bullet.speed * Math.cos(bullet.angle);
-            bullet.y += bullet.speed * Math.sin(bullet.angle);
+function updateCollision() {
+    const filtered = bullets.filter(bullet => {
+        let hit = false;
+
+        // Hit player boxes
+        for (const box of boxes) {
+            if (box.id === bullet.owner) continue;
+
+            if (isPointInRotatedBox(bullet, box)) {
+                box.health -= 10;
+                console.log(`Box ${box.id} hit! Health: ${box.health}`);
+                hit = true;
+                break;
+            }
         }
 
-        // Bullet-Box/Obstacle Collision
-        bullets = bullets.filter(bullet => {
-            let hit = false;
-
-            // Hit player boxes
-            for (const box of boxes) {
-                if (box.id === bullet.owner) continue;
-
-                if (isPointInRotatedBox(bullet, box)) {
-                    box.health -= 10;
-                    console.log(`Box ${box.id} hit! Health: ${box.health}`);
+        // Hit obstacles (stop bullet, no damage)
+        if (!hit) {
+            for (const obs of obstacles) {
+                if (isPointInRotatedBox(bullet, obs)) {
+                    console.log(`Bullet hit obstacle ${obs.id}`);
                     hit = true;
                     break;
                 }
             }
+        }
 
-            // Hit obstacles (stop bullet, no damage)
-            if (!hit) {
-                for (const obs of obstacles) {
-                    if (isPointInRotatedBox(bullet, obs)) {
-                        console.log(`Bullet hit obstacle ${obs.id}`);
-                        hit = true;
-                        break;
-                    }
-                }
-            }
-
-            // Remove bullet if it hit something or went out of bounds
-            return !hit &&
-                bullet.x >= 0 && bullet.x <= MAP_SIZE_X &&
-                bullet.y >= 0 && bullet.y <= MAP_SIZE_Y;
-        });
-
-
-        broadcast(); // send updated state to clients
-    }, 1000 / 30); // 30 FPS
+        // Remove bullet if it hit something or went out of bounds
+        return !hit &&
+            bullet.x >= 0 && bullet.x <= MAP_SIZE_X &&
+            bullet.y >= 0 && bullet.y <= MAP_SIZE_Y;
+    });
+    bullets.length = 0;
+    bullets.push(...filtered);
 }
 
-
-// Middleware to handle POST /action
-function handleAction(req, res, next) {
-    const { id, type, dy, da } = req.body;
+function handleAction(msg) {
+    const { id, type, dy, da } = msg;
     const box = boxes.find(b => b.id === id);
     if (!box) return res.sendStatus(404);
 
@@ -172,54 +157,12 @@ function handleAction(req, res, next) {
         });
     }
 
-    broadcast();
-    res.sendStatus(200);
-}
-
-// Middleware to handle GET /events (SSE)
-function handleSSE(req, res, next) {
-    const clientId = randomUUID();
-    const newBox = {
-        id: clientId,
-        x: Math.floor(Math.random() * MAP_SIZE_X),
-        y: Math.floor(Math.random() * MAP_SIZE_Y),
-        angle: 0,
-        width: 50,
-        height: 50,
-        health: 100,
-    };
-
-    boxes.push(newBox);
-
-    // SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.flushHeaders();
-
-    res.write(`data: ${JSON.stringify({ myId: clientId, boxes, bullets })}\n\n`);
-
-    const client = { id: clientId, res };
-    clients.set(clientId, client);
-
-    console.log(`Client connected: ${clientId}`);
-
-    req.on('close', () => {
-        console.log(`Client disconnected: ${clientId}`);
-        boxes = boxes.filter(b => b.id !== clientId);
-        clients.delete(clientId);
-        broadcast();
-    });
-
-    startLoop();
-    broadcast();
+    //broadcast();
+    //res.sendStatus(200);
 }
 
 module.exports = {
     handleAction,
-    handleSSE,
-    clients,
-    broadcast
+    moveBullets,
+    updateCollision
 };

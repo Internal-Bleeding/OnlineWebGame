@@ -1,0 +1,23 @@
+{
+  "name": "onlinewebgame",
+  "version": "1.0.0",
+  "description": "<img width=\"850\" height=\"867\" alt=\"image\" src=\"https://github.com/user-attachments/assets/7990ee0c-c415-4f2b-bdf2-dcb91259c538\" />",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Internal-Bleeding/OnlineWebGame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Internal-Bleeding/OnlineWebGame/issues"
+  },
+  "homepage": "https://github.com/Internal-Bleeding/OnlineWebGame#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

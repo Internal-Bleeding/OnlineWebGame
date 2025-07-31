@@ -1,19 +1,11 @@
 // game/routes.js
 const express = require('express');
 const router = express.Router();
-const gameServer = require('./server/gameEngine'); // your game logic module
+const {obstacles} = require('./server/mapData'); // your game logic module
 
+// Keep map-data if client fetches it
 router.get('/map-data', (req, res) => {
-  res.json(gameServer.getMapData());
-});
-
-router.post('/action', (req, res) => {
-  gameServer.handleAction(req.body);
-  res.sendStatus(200);
-});
-
-router.get('/events', (req, res) => {
-  gameServer.handleSSE(req, res);
+  res.json(obstacles);
 });
 
 module.exports = router;
