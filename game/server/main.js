@@ -7,7 +7,7 @@ function broadcast() {
         const clientBox = boxes.find(b => b.id === client.id);
         const visibleBoxes = boxes.filter(box => {
             if (box === clientBox) return true;
-            return isBoxVisible({ x: clientBox.x, y: clientBox.y }, { x: box.x, y: box.y }, obstacles);
+            return gameEngine.isBoxVisible({ x: clientBox.x, y: clientBox.y }, { x: box.x, y: box.y }, obstacles);
         });
 
         const payload = {
@@ -59,6 +59,7 @@ function handleWSConnection(ws) {
     ws.on('message', (data) => {
         try {
             const msg = JSON.parse(data);
+            console.log(clientId + " " + msg)
             handleActionWS(clientId, msg);
         } catch (err) {
             console.error('Failed to parse message:', err);
@@ -79,8 +80,7 @@ function handleWSConnection(ws) {
 
 
 function handleActionWS(id, msg) {
-    const ms = {id, msg};
-    gameEngine.handleAction(ms);
+    gameEngine.handleAction(id, msg);
     broadcast();
 }
 

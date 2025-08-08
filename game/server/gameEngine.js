@@ -41,22 +41,6 @@ function doLineSegmentsIntersect(p1, p2, q1, q2) {
     );
 }
 
-/*function broadcast() {
-    for (const client of clients.values()) {
-        const clientBox = boxes.filter(b => b.id == client.id)[0]; // return the box that has our client id
-        const visibleBoxes = boxes.filter(box => {
-            if (box === clientBox) return true;
-
-            const from = { x: clientBox.x, y: clientBox.y };
-            const to = { x: box.x, y: box.y };
-
-            return isBoxVisible(from, to, obstacles);
-        });
-
-        client.res.write(`data: ${JSON.stringify({ myId: client.id, boxes: visibleBoxes, bullets })}\n\n`);
-    }
-}*/
-
 function isPointInRotatedBox(point, box) {
   const angle = box.angle; // in radians
 
@@ -125,8 +109,9 @@ function updateCollision() {
     bullets.push(...filtered);
 }
 
-function handleAction(msg) {
-    const { id, type, dy, da } = msg;
+function handleAction(id, msg) {
+    const {type, dy, da } = msg;
+    //console.log(id + "msg:" + type + " " + dy + " " +da);
     const box = boxes.find(b => b.id === id);
     if (!box) return res.sendStatus(404);
 
@@ -135,19 +120,24 @@ function handleAction(msg) {
     if (box.health <= 0) return; //check if dead before letting move
 
     if (type === 'move') {
-    const nextX = box.x + dy * Math.cos(box.angle);
-    const nextY = box.y + dy * Math.sin(box.angle);
+        const nextX = box.x + dy * Math.cos(box.angle);
+        const nextY = box.y + dy * Math.sin(box.angle);
 
-    const wouldCollide = obstacles.some(obs =>
-        isPointInRotatedBox({ x: nextX, y: nextY }, obs)
-    );
-    if (!wouldCollide) {
-        box.x = nextX;
-        box.y = nextY;
+        const wouldCollide = obstacles.some(obs => 
+            isPointInRotatedBox({ x: nextX, y: nextY }, obs) ||
+            isPointInRotatedBox({ x: nextX + box.width, y: nextY }, obs) ||
+            isPointInRotatedBox({ x: nextX, y: nextY + box.height }, obs) ||
+            isPointInRotatedBox({ x: nextX + box.width, y: nextY + box.height }, obs)
+        );
+        if (!wouldCollide) {  
+            box.x = nextX;
+            box.y = nextY;
+        }
     }
-    } else if (type === 'rotate') {
+    else if (type === 'rotate') {
         box.angle += da;
-    } else if (type === 'shoot') {
+    }
+    else if (type === 'shoot') {
         bullets.push({
             x: box.x + box.width / 2,
             y: box.y + box.height / 2,
@@ -164,5 +154,6 @@ function handleAction(msg) {
 module.exports = {
     handleAction,
     moveBullets,
+    isBoxVisible,
     updateCollision
 };
